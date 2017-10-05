@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <EditText
+        android:id="@+id/fragment_view_edt0"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Edt 0"
+        android:maxLines="1"
+        android:singleLine="true" />
+
+    <EditText
+        android:id="@+id/fragment_view_edt1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/fragment_view_edt0"
+        android:hint="Edt 1" />
+
+    <EditText
+        android:id="@+id/fragment_view_edt2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/fragment_view_edt1"
+        android:hint="Edt 2" />
+
+    <EditText
+        android:id="@+id/fragment_view_edt3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/fragment_view_edt2"
+        android:hint="Edt 3" />
+
+    <EditText
+        android:id="@+id/fragment_view_edt4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/fragment_view_edt3"
+        android:hint="Edt 4"
+        android:maxLines="1"
+        android:singleLine="true" />
+</RelativeLayout>
