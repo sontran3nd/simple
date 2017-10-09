@@ -7,9 +7,12 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 
+import com.example.admin.keyboard.Fragments.Dialog.ViewInDialog;
 import com.example.admin.keyboard.R;
 import com.example.admin.keyboard.Utils.CustomKeyboard;
 import com.example.admin.keyboard.Utils.SimpleQwertyKeyboard;
@@ -20,6 +23,8 @@ import com.example.admin.keyboard.Utils.TKKeyBoard;
  */
 
 public class ViewFragment extends Fragment {
+
+    private Button btnShow;
 
     @Nullable
     @Override
@@ -37,13 +42,16 @@ public class ViewFragment extends Fragment {
 //        kbParams.addRule(RelativeLayout.FOCUSABLES_TOUCH_MODE);
 //        relativeLayout.addView(mCustomKeyboard.getKeyboard(), kbParams);
 
-        mCustomKeyboard = new SimpleQwertyKeyboard(getActivity());
+        mCustomKeyboard = new SimpleQwertyKeyboard(getActivity(), null, false);
+
+        setupViews(view);
         View viewx = mCustomKeyboard.setUpKeyBoardWithFragment(view);
         EditText editText = view.findViewById(R.id.fragment_view_edt0);
         mCustomKeyboard.registerEditText(editText);
+
         EditText edt2 = view.findViewById(R.id.fragment_view_edt2);
         mCustomKeyboard.registerEditText(edt2);
-        EditText edt4 = viewx.findViewById(R.id.fragment_view_edt4);
+        EditText edt4 = view.findViewById(R.id.fragment_view_edt4);
         mCustomKeyboard.registerEditText(edt4);
         return viewx;
     }
@@ -51,8 +59,16 @@ public class ViewFragment extends Fragment {
     SimpleQwertyKeyboard mCustomKeyboard;
     private void setupViews(View view)
     {
-        EditText edt = view.findViewById(R.id.fragment_view_edt0);
-        mCustomKeyboard.registerEditText(R.id.fragment_view_edt0);
+        Button btn = view.findViewById(R.id.fragment_view_btn_show);
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ViewInDialog viewDialog = new ViewInDialog();
+//                viewDialog.simpleQwertyKeyboards = mCustomKeyboard;
+                viewDialog.show(getFragmentManager(), "");
+
+            }
+        });
     }
 
 }

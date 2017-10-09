@@ -10,8 +10,8 @@ ext {
 
     libraryDescription = 'A widget to load WebView as an Overlay.'
 
-    siteUrl = 'https://github.com/'
-    gitUrl = 'https://github.com/'
+    siteUrl = 'https://github.com/sontran3nd/simple'
+    gitUrl = 'https://github.com/sontran3nd/simple.git '
 
     libraryVersion = '1.0.0'
 

@@ -1,8 +1,10 @@
 package com.example.admin.keyboard.Utils;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.inputmethodservice.Keyboard;
 import android.inputmethodservice.KeyboardView;
+import android.os.Build;
 import android.support.v7.widget.AppCompatEditText;
 import android.text.Editable;
 import android.text.InputType;
@@ -27,6 +29,7 @@ public class SimpleQwertyKeyboard {
     private KeyboardView mKeyboardView;
     private boolean caps = false;
     private Activity mActivity;
+    private Dialog mDialog;
     private int keyBoardLayoutId = R.xml.simple_qwerty_keyboard;
 
     public SimpleQwertyKeyboard(Activity activity, int viewid, int layoutid) {
@@ -40,28 +43,21 @@ public class SimpleQwertyKeyboard {
         mActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
     }
 
-    public SimpleQwertyKeyboard(Activity activity) {
-        mActivity = activity;
-        mKeyboardView = new KeyboardView(mActivity, null);
-        //mKeyboardView = (KeyboardView) mHostActivity.findViewById(viewid);
-        mKeyboardView.setKeyboard(new Keyboard(mActivity, keyBoardLayoutId));
-        mKeyboardView.setPreviewEnabled(false); // NOTE Do not show the preview balloons
-        mKeyboardView.setOnKeyboardActionListener(mOnKeyboardActionListener);
-        // Hide the standard keyboard initially
-        mActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-    }
-
-    public SimpleQwertyKeyboard(Activity activity, boolean caps_lock_on) {
-        mActivity = activity;
-        mKeyboardView = new KeyboardView(mActivity, null);
-        //mKeyboardView = (KeyboardView) mHostActivity.findViewById(viewid);
-        mKeyboardView.setKeyboard(new Keyboard(mActivity, keyBoardLayoutId));
-        mKeyboardView.setPreviewEnabled(false); // NOTE Do not show the preview balloons
-        mKeyboardView.setOnKeyboardActionListener(mOnKeyboardActionListener);
-        // Hide the standard keyboard initially
-        mActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-
+    public SimpleQwertyKeyboard(Activity activity, Dialog dialog, boolean caps_lock_on) {
+        if (activity != null)
+            mActivity = activity;
+        if (dialog != null)
+            mDialog = dialog;
         caps = caps_lock_on;
+
+        mKeyboardView = new KeyboardView(mActivity, null);
+        //mKeyboardView = (KeyboardView) mHostActivity.findViewById(viewid);
+        mKeyboardView.setKeyboard(new Keyboard(mActivity, keyBoardLayoutId));
+        mKeyboardView.setPreviewEnabled(false); // NOTE Do not show the preview balloons
+        mKeyboardView.setOnKeyboardActionListener(mOnKeyboardActionListener);
+        // Hide the standard keyboard initially
+        mActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
         mKeyboardView.setShifted(caps);
         mKeyboardView.invalidateAllKeys();
     }
@@ -118,6 +114,7 @@ public class SimpleQwertyKeyboard {
                 showCustomKeyboard(v);
             }
         });
+
         // Disable standard keyboard hard way
         // NOTE There is also an easy way: 'edittext.setInputType(InputType.TYPE_NULL)' (but you will not have a cursor, and no 'edittext.setCursorVisible(true)' doesn't work )
         edittext.setOnTouchListener(new View.OnTouchListener() {
@@ -132,38 +129,39 @@ public class SimpleQwertyKeyboard {
                 Layout layout = ((EditText) v).getLayout();
                 if (layout != null) {
                     float x = event.getX() + edittext.getScrollX();
-                    int offset = layout.getOffsetForHorizontal(0, x);
+                    int y = (int) event.getY();
+//                    System.out.println("(" + x + ", " + y + ")");
+                    int line = layout.getLineForVertical(y);
+                    int offset = layout.getOffsetForHorizontal(line, x);
+
                     if (offset > 0)
-                        if (x > layout.getLineMax(0))
-                            edittext.setSelection(offset);     // touch was at end of text
-                        else
-                            edittext.setSelection(offset - 1);
-                }
-                else{
+                        edittext.setSelection(offset);
+                    else
+                        edittext.setSelection(0);
+                } else {
                     ViewTreeObserver vto = edittext.getViewTreeObserver();
                     final MotionEvent eventx = event;
                     vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                         @Override
                         public void onGlobalLayout() {
                             Layout layout = edittext.getLayout();
-                            if (layout != null)
-                            {
+                            if (layout != null) {
                                 float x = eventx.getX() + edittext.getScrollX();
-                                int offset = layout.getOffsetForHorizontal(0, x);
+                                int y = (int) eventx.getY();
+//                                System.out.println("(" + x + ", " + y + ")");
+
+                                int line = layout.getLineForVertical(y);
+
+                                int offset = layout.getOffsetForHorizontal(line, x);
+
                                 if (offset > 0)
-                                    if (x > layout.getLineMax(0))
-                                        edittext.setSelection(offset);     // touch was at end of text
-                                    else
-                                        edittext.setSelection(offset - 1);
+                                    edittext.setSelection(offset);
+                                else
+                                    edittext.setSelection(0);
                             }
                         }
                     });
                 }
-//                String currentContent = edittext.getText().toString();
-//                if (currentContent.length() > 0)
-//                {
-//                    edittext.setSelection(currentContent.length());
-//                }
 
                 return true; // Consume touch event
             }
@@ -205,38 +203,38 @@ public class SimpleQwertyKeyboard {
                 Layout layout = ((EditText) v).getLayout();
                 if (layout != null) {
                     float x = event.getX() + edittext.getScrollX();
-                    int offset = layout.getOffsetForHorizontal(0, x);
+                    int y = (int) event.getY();
+//                    System.out.println("(" + x + ", " + y + ")");
+                    int line = layout.getLineForVertical(y);
+                    int offset = layout.getOffsetForHorizontal(line, x);
+
                     if (offset > 0)
-                        if (x > layout.getLineMax(0))
-                            edittext.setSelection(offset);     // touch was at end of text
-                        else
-                            edittext.setSelection(offset - 1);
-                }
-                else{
+                        edittext.setSelection(offset);
+                    else
+                        edittext.setSelection(0);
+                } else {
                     ViewTreeObserver vto = edittext.getViewTreeObserver();
                     final MotionEvent eventx = event;
                     vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                         @Override
                         public void onGlobalLayout() {
                             Layout layout = edittext.getLayout();
-                            if (layout != null)
-                            {
+                            if (layout != null) {
                                 float x = eventx.getX() + edittext.getScrollX();
-                                int offset = layout.getOffsetForHorizontal(0, x);
+                                int y = (int) eventx.getY();
+//                                System.out.println("(" + x + ", " + y + ")");
+
+                                int line = layout.getLineForVertical(y);
+                                int offset = layout.getOffsetForHorizontal(line, x);
+
                                 if (offset > 0)
-                                    if (x > layout.getLineMax(0))
-                                        edittext.setSelection(offset);     // touch was at end of text
-                                    else
-                                        edittext.setSelection(offset - 1);
+                                    edittext.setSelection(offset);
+                                else
+                                    edittext.setSelection(0);
                             }
                         }
                     });
                 }
-
-//                String currentContent = edittext.getText().toString();
-//                if (currentContent.length() > 0) {
-//                    edittext.setSelection(currentContent.length());
-//                }
 
                 return true; // Consume touch event
             }
@@ -251,9 +249,12 @@ public class SimpleQwertyKeyboard {
 
         @Override
         public void onKey(int primaryCode, int[] keyCodes) {
-            // NOTE We can say '<Key android:codes="49,50" ... >' in the xml file; all codes come in keyCodes, the first in this list in primaryCode
             // Get the EditText and its Editable
-            View focusCurrent = mActivity.getWindow().getCurrentFocus();
+            View focusCurrent = null;
+            if (mDialog != null)
+                focusCurrent = mDialog.getWindow().getCurrentFocus();
+            else if (mActivity != null)
+                focusCurrent = mActivity.getWindow().getCurrentFocus();
 
             if (focusCurrent == null)
                 return;
